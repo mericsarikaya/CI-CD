@@ -1,0 +1,35 @@
+name: CI/CD Pipeline (Lokal VM)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    # İŞTE SİHİRLİ KISIM BURASI: GitHub sunucuları yerine senin sanal makinen çalışacak
+    runs-on: self-hosted 
+
+    steps:
+    - name: Kodu Çek
+      uses: actions/checkout@v3
+
+    - name: Bağımlılıkları Yükle ve Testleri Çalıştır
+      run: |
+        # Bu adımlar doğrudan senin sanal makinende çalışıyor!
+        pip install -r requirements.txt
+        pytest test_app.py
+
+    - name: Yeni Kodu Canlıya Al (Deploy)
+      run: |
+        # GitHub Runner'ın indirdiği yeni kodları, uygulamamızın asıl dizinine kopyalıyoruz
+        cp -r * /home/KULLANICI_ADIN/myapp/
+        
+        # Uygulamanın olduğu dizine git
+        cd /home/KULLANICI_ADIN/myapp/
+        
+        # Virtual environment aktif et ve kütüphaneleri güncelle
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+        # Yeni kodların devreye girmesi için servisi yeniden başlat
+        sudo systemctl restart myapp.service
